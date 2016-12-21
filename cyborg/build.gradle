@@ -1,0 +1,21 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+    compile "com.android.support:support-annotations:${androidSupportLibraryVersion}"
+
+    androidTestCompile "com.android.support:support-annotations:${androidSupportLibraryVersion}"
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'junit:junit:4.12'
+}
+
+android {
+    buildToolsVersion androidBuildToolsVersion
+    compileSdkVersion androidCompileSdkVersion
+
+    defaultConfig {
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+}

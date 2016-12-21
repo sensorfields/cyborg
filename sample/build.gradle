@@ -1,0 +1,22 @@
+apply plugin: 'com.android.application'
+
+dependencies {
+    compile "com.android.support:support-annotations:${androidSupportLibraryVersion}"
+    compile "com.android.support:appcompat-v7:${androidSupportLibraryVersion}"
+
+    compile project(':cyborg')
+}
+
+android {
+    buildToolsVersion androidBuildToolsVersion
+    compileSdkVersion androidCompileSdkVersion
+
+    defaultConfig {
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
+
+        applicationId 'com.sensorfields.cyborg.sample'
+        versionCode 1
+        versionName '1.0.0'
+    }
+}
