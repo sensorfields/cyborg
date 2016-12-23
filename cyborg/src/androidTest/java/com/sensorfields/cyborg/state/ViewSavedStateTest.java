@@ -1,4 +1,4 @@
-package com.sensorfields.cyborg.parcel;
+package com.sensorfields.cyborg.state;
 
 import android.os.Parcel;
 import android.os.ParcelUuid;
@@ -19,13 +19,13 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
-public class SavedStateTest {
+public class ViewSavedStateTest {
 
-    private SavedState.StateAware stateAware;
+    private Stateful stateful;
 
     @Before
     public void setup() {
-        stateAware = mock(SavedState.StateAware.class);
+        stateful = mock(Stateful.class);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -35,7 +35,7 @@ public class SavedStateTest {
                 state.writeLong(7L);
                 return null;
             }
-        }).when(stateAware).onSaveState(isA(Parcel.class));
+        }).when(stateful).onSaveState(isA(Parcel.class));
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -45,15 +45,15 @@ public class SavedStateTest {
                 assertEquals(7L, state.readLong());
                 return null;
             }
-        }).when(stateAware).onRestoreState(isA(Parcel.class));
+        }).when(stateful).onRestoreState(isA(Parcel.class));
     }
 
     @Test
     public void parcelableSaveAndRestore() {
         ParcelUuid superState = new ParcelUuid(UUID.randomUUID());
 
-        Parcelable savedState = SavedState.onSaveInstanceState(stateAware, superState);
-        Parcelable newSuperState = SavedState.onRestoreInstanceState(stateAware, savedState);
+        Parcelable savedState = ViewSavedState.onSaveInstanceState(stateful, superState);
+        Parcelable newSuperState = ViewSavedState.onRestoreInstanceState(stateful, savedState);
 
         assertEquals(superState, newSuperState);
     }
@@ -62,7 +62,7 @@ public class SavedStateTest {
     public void parcelableSaveAndRestoreThroughParcel() {
         ParcelUuid superState = new ParcelUuid(UUID.randomUUID());
 
-        Parcelable savedState = SavedState.onSaveInstanceState(stateAware, superState);
+        Parcelable savedState = ViewSavedState.onSaveInstanceState(stateful, superState);
 
         Parcel parcel = Parcel.obtain();
         parcel.writeParcelable(savedState, 0);
@@ -70,7 +70,7 @@ public class SavedStateTest {
         Parcelable newSavedState = parcel.readParcelable(getClass().getClassLoader());
         parcel.recycle();
 
-        Parcelable newSuperState = SavedState.onRestoreInstanceState(stateAware, newSavedState);
+        Parcelable newSuperState = ViewSavedState.onRestoreInstanceState(stateful, newSavedState);
 
         assertEquals(superState, newSuperState);
     }
