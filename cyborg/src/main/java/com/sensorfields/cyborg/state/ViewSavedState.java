@@ -3,7 +3,7 @@ package com.sensorfields.cyborg.state;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ViewSavedState implements Parcelable {
+public final class ViewSavedState implements Parcelable {
 
     public static Parcelable onSaveInstanceState(Stateful stateful, Parcelable superState) {
         Parcel parcel = Parcel.obtain();
