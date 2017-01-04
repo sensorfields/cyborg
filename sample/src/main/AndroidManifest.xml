@@ -4,9 +4,10 @@
 
     <application
         android:allowBackup="false"
-        android:label="@string/application_label"
+        android:name=".Application"
+        android:theme="@style/Theme.Application"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/Theme.Application">
+        android:label="@string/application_label">
 
         <activity android:name=".Activity"
             android:exported="true" />
