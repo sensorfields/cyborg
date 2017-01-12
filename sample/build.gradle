@@ -1,4 +1,11 @@
+buildscript {
+    dependencies {
+        classpath 'me.tatarka:gradle-retrolambda:3.4.0'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 dependencies {
     compile "com.android.support:support-annotations:${androidSupportLibraryVersion}"
@@ -24,5 +31,10 @@ android {
         applicationId 'com.sensorfields.cyborg.sample'
         versionCode 1
         versionName '1.0.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }

@@ -21,11 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class SingleTaskListView extends SwipeRefreshLayout implements
@@ -71,12 +69,7 @@ public class SingleTaskListView extends SwipeRefreshLayout implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        taskManager.attachSingle(findItemsTaskId, new Consumer<List<String>>() {
-            @Override
-            public void accept(List<String> items) throws Exception {
-                setItems(items);
-            }
-        });
+        taskManager.attachSingle(findItemsTaskId, this::setItems);
         if (firstAttach) {
             findItems();
         }
@@ -144,12 +137,10 @@ public class SingleTaskListView extends SwipeRefreshLayout implements
     static class ItemRepository {
         Single<List<String>> findItems() {
             return Single
-                    .fromCallable(new Callable<List<String>>() {
-                        @Override
-                        public List<String> call() throws Exception {
-                            SystemClock.sleep(5000);
-                            return Arrays.asList("One", "Two", "Three");
-                        }
+                    .fromCallable(() -> {
+                        SystemClock.sleep(5000);
+                        return Arrays.asList("One " + Math.random(), "Two " + Math.random(),
+                                "Three" + Math.random());
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
