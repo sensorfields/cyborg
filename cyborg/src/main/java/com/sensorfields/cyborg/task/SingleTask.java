@@ -1,8 +1,11 @@
 package com.sensorfields.cyborg.task;
 
+import android.support.annotation.Nullable;
+
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.AsyncSubject;
 import io.reactivex.subjects.Subject;
@@ -14,7 +17,7 @@ class SingleTask<T> {
 
     private final Subject<T> subject = AsyncSubject.create();
 
-    private Consumer<T> onSuccess;
+    private AttachInfo<T> attachInfo;
     private Disposable disposable;
 
     private boolean started = false;
@@ -24,23 +27,23 @@ class SingleTask<T> {
         this.id = id;
     }
 
-    void attach(final Consumer<T> onSuccess) {
+    void attach(AttachInfo<T> attachInfo) {
         if (isAttached()) {
             throw new IllegalStateException("Task has to be detached before it can be attached");
         }
-        this.onSuccess = onSuccess;
-        disposable = subject
+        this.attachInfo = attachInfo;
+        disposable = attachInfo.subscribe(subject
                 .doAfterTerminate(new Action() {
                     @Override
                     public void run() throws Exception {
                         terminate();
                     }
                 })
-                .singleOrError().subscribe(onSuccess);
+                .singleOrError());
     }
 
     void detach() {
-        onSuccess = null;
+        attachInfo = null;
         if (disposable != null) {
             disposable.dispose();
             disposable = null;
@@ -60,15 +63,52 @@ class SingleTask<T> {
 
     private void terminate() {
         taskManager.remove(id);
-        taskManager.attachSingle(id, onSuccess);
+        taskManager.attachSingle(id, attachInfo);
         detach();
     }
 
     private boolean isAttached() {
-        return onSuccess != null;
+        return attachInfo != null;
     }
 
     private boolean isStarted() {
         return started;
+    }
+
+    static final class AttachInfo<T> {
+
+        @Nullable final Consumer<T> onSuccess;
+        @Nullable final Consumer<Throwable> onError;
+        @Nullable final BiConsumer<T, Throwable> onCallback;
+
+        AttachInfo(Consumer<T> onSuccess) {
+            this(onSuccess, null, null);
+        }
+
+        AttachInfo(Consumer<T> onSuccess, Consumer<Throwable> onError) {
+            this(onSuccess, onError, null);
+        }
+
+        AttachInfo(BiConsumer<T, Throwable> onCallback) {
+            this(null, null, onCallback);
+        }
+
+        private AttachInfo(@Nullable Consumer<T> onSuccess, @Nullable Consumer<Throwable> onError,
+                           @Nullable BiConsumer<T, Throwable> onCallback) {
+            this.onSuccess = onSuccess;
+            this.onError = onError;
+            this.onCallback = onCallback;
+        }
+
+        Disposable subscribe(Single<T> single) {
+            if (onCallback != null) {
+                return single.subscribe(onCallback);
+            } else if (onSuccess != null && onError == null) {
+                return single.subscribe(onSuccess);
+            } else if (onSuccess != null) {
+                return single.subscribe(onSuccess, onError);
+            }
+            throw new IllegalArgumentException("Please provide valid callbacks");
+        }
     }
 }

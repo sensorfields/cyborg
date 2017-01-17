@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Single;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -13,13 +14,29 @@ public class TaskManager {
 
     private final Map<String, SingleTask<?>> tasks = new HashMap<>();
 
+    // Single
+
     public <T> void attachSingle(String id, Consumer<T> onSuccess) {
-        this.<T>getOrCreateSingleTask(id).attach(onSuccess);
+        attachSingle(id, new SingleTask.AttachInfo<>(onSuccess));
+    }
+
+    public <T> void attachSingle(String id, Consumer<T> onSuccess, Consumer<Throwable> onError) {
+        attachSingle(id, new SingleTask.AttachInfo<>(onSuccess, onError));
+    }
+
+    public <T> void attachSingle(String id, BiConsumer<T, Throwable> onCallback) {
+        attachSingle(id, new SingleTask.AttachInfo<>(onCallback));
+    }
+
+    <T> void attachSingle(String id, SingleTask.AttachInfo<T> attachInfo) {
+        this.<T>getOrCreateSingleTask(id).attach(attachInfo);
     }
 
     public <T> void start(String id, Single<T> single) {
         this.<T>getOrCreateSingleTask(id).start(single);
     }
+
+    // General
 
     public void detach(String id) {
         getOrCreateSingleTask(id).detach();

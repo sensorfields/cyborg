@@ -25,6 +25,7 @@ import java.util.UUID;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class SingleTaskListView extends SwipeRefreshLayout implements
         SwipeRefreshLayout.OnRefreshListener, Stateful {
@@ -66,10 +67,14 @@ public class SingleTaskListView extends SwipeRefreshLayout implements
         setRefreshing(false);
     }
 
+    void setError(Throwable e) {
+        Timber.e(e, "setError yo yoo");
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        taskManager.attachSingle(findItemsTaskId, this::setItems);
+        taskManager.attachSingle(findItemsTaskId, this::setItems, this::setError);
         if (firstAttach) {
             findItems();
         }
