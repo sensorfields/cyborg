@@ -39,7 +39,6 @@ public class TaskManagerSingleTest {
         onSuccess = mock(Consumer.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void onSuccess() throws Exception {
         // we get the value

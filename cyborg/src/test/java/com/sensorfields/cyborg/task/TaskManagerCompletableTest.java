@@ -90,7 +90,7 @@ public class TaskManagerCompletableTest {
     }
 
     @Test
-    public void onSuccess_startBeforeAttach() {
+    public void onComplete_startBeforeAttach() {
         try {
             taskManager.start(id, completable);
             fail("Expected IllegalStateException when starting a task with not attached ID");
@@ -98,7 +98,7 @@ public class TaskManagerCompletableTest {
     }
 
     @Test
-    public void onSuccess_startAfterDetach() {
+    public void onComplete_startAfterDetach() {
         taskManager.attachCompletable(id, onComplete);
         taskManager.detach(id);
         try {
@@ -108,7 +108,7 @@ public class TaskManagerCompletableTest {
     }
 
     @Test
-    public void onSuccess_startAfterAlreadyStarted() throws Exception {
+    public void onComplete_startAfterAlreadyStarted() throws Exception {
         taskManager.attachCompletable(id, onComplete);
         taskManager.start(id, completable);
         verify(onComplete, never()).run();
@@ -125,7 +125,7 @@ public class TaskManagerCompletableTest {
     }
 
     @Test
-    public void onSuccess_startAfterCompleted() throws Exception {
+    public void onComplete_startAfterCompleted() throws Exception {
         taskManager.attachCompletable(id, onComplete);
         taskManager.start(id, completable);
         verify(onComplete, never()).run();

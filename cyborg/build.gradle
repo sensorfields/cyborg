@@ -4,6 +4,7 @@ dependencies {
     compile "com.android.support:support-annotations:${androidSupportLibraryVersion}"
 
     compile 'io.reactivex.rxjava2:rxjava:2.0.3'
+    compile 'com.github.akarnokd:rxjava2-extensions:0.14.3'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-core:1.3'

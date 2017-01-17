@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.BiConsumer;
@@ -56,6 +57,20 @@ public class TaskManager {
         getOrCreateCompletableTask(id).start(completable);
     }
 
+    // Observable
+
+    public <T> void attachObservable(String id, Consumer<T> onNext) {
+        attachObservable(id, new ObservableTask.AttachInfo<>(onNext));
+    }
+
+    <T> void attachObservable(String id, ObservableTask.AttachInfo<T> attachInfo) {
+        this.<T>getOrCreateObservableTask(id).attach(attachInfo);
+    }
+
+    public <T> void start(String id, Observable<T> observable) {
+        this.<T>getOrCreateObservableTask(id).start(observable);
+    }
+
     // General
 
     public void detach(String id) {
@@ -82,6 +97,16 @@ public class TaskManager {
         CompletableTask task = (CompletableTask) tasks.get(id);
         if (task == null) {
             task = new CompletableTask(this, id);
+            tasks.put(id, task);
+        }
+        return task;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> ObservableTask<T> getOrCreateObservableTask(String id) {
+        ObservableTask<T> task = (ObservableTask<T>) tasks.get(id);
+        if (task == null) {
+            task = new ObservableTask<>(this, id);
             tasks.put(id, task);
         }
         return task;
