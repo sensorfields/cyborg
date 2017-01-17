@@ -10,7 +10,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.AsyncSubject;
 import io.reactivex.subjects.Subject;
 
-class SingleTask<T> {
+final class SingleTask<T> extends Task {
 
     private final TaskManager taskManager;
     private final String id;
@@ -42,6 +42,7 @@ class SingleTask<T> {
                 .singleOrError());
     }
 
+    @Override
     void detach() {
         attachInfo = null;
         if (disposable != null) {

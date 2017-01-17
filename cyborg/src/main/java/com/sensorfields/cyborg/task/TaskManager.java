@@ -3,7 +3,9 @@ package com.sensorfields.cyborg.task;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 
@@ -12,7 +14,7 @@ import io.reactivex.functions.Consumer;
  */
 public class TaskManager {
 
-    private final Map<String, SingleTask<?>> tasks = new HashMap<>();
+    private final Map<String, Task> tasks = new HashMap<>();
 
     // Single
 
@@ -36,10 +38,30 @@ public class TaskManager {
         this.<T>getOrCreateSingleTask(id).start(single);
     }
 
+    // Completable
+
+    public void attachCompletable(String id, Action onComplete) {
+        attachCompletable(id, new CompletableTask.AttachInfo(onComplete));
+    }
+
+    public void attachCompletable(String id, Action onComplete, Consumer<Throwable> onError) {
+        attachCompletable(id, new CompletableTask.AttachInfo(onComplete, onError));
+    }
+
+    void attachCompletable(String id, CompletableTask.AttachInfo attachInfo) {
+        getOrCreateCompletableTask(id).attach(attachInfo);
+    }
+
+    public void start(String id, Completable completable) {
+        getOrCreateCompletableTask(id).start(completable);
+    }
+
     // General
 
     public void detach(String id) {
-        getOrCreateSingleTask(id).detach();
+        if (tasks.containsKey(id)) {
+            tasks.get(id).detach();
+        }
     }
 
     void remove(String id) {
@@ -51,6 +73,15 @@ public class TaskManager {
         SingleTask<T> task = (SingleTask<T>) tasks.get(id);
         if (task == null) {
             task = new SingleTask<>(this, id);
+            tasks.put(id, task);
+        }
+        return task;
+    }
+
+    private CompletableTask getOrCreateCompletableTask(String id) {
+        CompletableTask task = (CompletableTask) tasks.get(id);
+        if (task == null) {
+            task = new CompletableTask(this, id);
             tasks.put(id, task);
         }
         return task;
