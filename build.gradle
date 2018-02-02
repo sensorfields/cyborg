@@ -20,5 +20,10 @@ ext {
     targetSdkVersion = 27
 
     androidSupportLibraryVersion = '27.0.2'
+    androidArchVersion = '1.1.0'
     timberVersion = '4.6.0'
+    guavaVersion = '24.0-android'
+    conductorVersion = '2.1.4'
+    daggerVersion = '2.14.1'
+    autoValueVersion = '1.5.3'
 }
