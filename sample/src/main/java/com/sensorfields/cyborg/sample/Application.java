@@ -1,17 +1,27 @@
 package com.sensorfields.cyborg.sample;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 
 import com.sensorfields.cyborg.navigator.Navigator;
 import com.sensorfields.cyborg.navigator.conductor.ConductorNavigator;
+import com.sensorfields.cyborg.sample.main.home.HomeViewModel;
 
+import java.util.Map;
+
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import dagger.Binds;
 import dagger.Provides;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 import timber.log.Timber;
 
-public class Application extends android.app.Application {
+public class Application extends android.app.Application implements ViewModelProvider.Factory {
 
     @Override
     public void onCreate() {
@@ -49,11 +59,20 @@ public class Application extends android.app.Application {
         return ((Application) context.getApplicationContext()).component;
     }
 
+    @SuppressWarnings("unchecked")
+    @NonNull
+    @Override
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        return (T) component.viewModelProviders().get(modelClass).get();
+    }
+
     @Singleton
     @dagger.Component(modules = Module.class)
     public interface Component {
 
         Navigator navigator();
+
+        Map<Class<?>, Provider<ViewModel>> viewModelProviders();
     }
 
     @dagger.Module
@@ -63,5 +82,9 @@ public class Application extends android.app.Application {
         static Navigator navigator() {
             return new ConductorNavigator();
         }
+
+        @SuppressWarnings("unused")
+        @Binds @IntoMap @ClassKey(HomeViewModel.class)
+        abstract ViewModel homeViewModel(HomeViewModel homeViewModel);
     }
 }

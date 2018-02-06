@@ -26,4 +26,6 @@ ext {
     conductorVersion = '2.1.4'
     daggerVersion = '2.14.1'
     autoValueVersion = '1.5.3'
+    rxjavaVersion = '2.1.9'
+    rxbindingVersion = '2.1.0'
 }

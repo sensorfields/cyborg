@@ -1,5 +1,9 @@
 package com.sensorfields.cyborg.navigator;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 
 public abstract class Transaction {
@@ -10,6 +14,11 @@ public abstract class Transaction {
 
     public static PushTransaction push(Screen screen) {
         return PushTransaction.create(screen);
+    }
+
+    public static ActivityForResultTransaction activityForResult(int requestCode, Intent intent,
+                                                                 @Nullable Bundle options) {
+        return ActivityForResultTransaction.create(requestCode, intent, options);
     }
 
     @AutoValue
@@ -29,6 +38,22 @@ public abstract class Transaction {
 
         static PushTransaction create(Screen screen) {
             return new AutoValue_Transaction_PushTransaction(screen);
+        }
+    }
+
+    @AutoValue
+    public abstract static class ActivityForResultTransaction extends Transaction {
+
+        public abstract int requestCode();
+
+        public abstract Intent intent();
+
+        @Nullable public abstract Bundle options();
+
+        static ActivityForResultTransaction create(int requestCode, Intent intent,
+                                                   @Nullable Bundle options) {
+            return new AutoValue_Transaction_ActivityForResultTransaction(requestCode, intent,
+                    options);
         }
     }
 }
