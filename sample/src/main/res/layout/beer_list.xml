@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.LinearLayout"
+    tools:layout_width="match_parent"
+    tools:layout_height="match_parent"
+    tools:orientation="vertical">
+
+    <Button
+        android:id="@id/beerListChooseButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/beer_list_choose_button" />
+
+    <Button
+        android:id="@id/beerListDetailButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/beer_list_detail_button" />
+
+</merge>

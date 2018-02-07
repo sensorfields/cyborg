@@ -2,43 +2,71 @@ package com.sensorfields.cyborg.sample.beer.list;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.view.Gravity;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
-import com.sensorfields.cyborg.navigator.Navigator;
+import com.sensorfields.cyborg.ViewDisposables;
+import com.sensorfields.cyborg.mvi.MviView;
 import com.sensorfields.cyborg.sample.Application;
 import com.sensorfields.cyborg.sample.R;
-import com.sensorfields.cyborg.sample.beer.detail.BeerDetailScreen;
 
-public final class BeerListView extends AppCompatTextView {
+import io.reactivex.Observable;
 
-    private final Navigator navigator;
+public final class BeerListView extends LinearLayout implements MviView<Intent, ViewState> {
+
+    private final ViewDisposables disposables = new ViewDisposables();
+    private final BeerListViewModel viewModel;
+
+    private final Button chooseButton;
+    private final Button detailButton;
 
     public BeerListView(Context context) {
         this(context, null);
     }
 
     public BeerListView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, android.R.attr.textViewStyle);
+        this(context, attrs, 0);
     }
 
     public BeerListView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        navigator = Application.component(context).navigator();
-        setGravity(Gravity.CENTER);
-        setText(R.string.beer_list_text);
+        this(context, attrs, defStyleAttr, 0);
+    }
+
+    public BeerListView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        viewModel = Application.component(context).navigator().viewModel(BeerListViewModel.class);
+        setOrientation(VERTICAL);
+        inflate(context, R.layout.beer_list, this);
+        chooseButton = findViewById(R.id.beerListChooseButton);
+        detailButton = findViewById(R.id.beerListDetailButton);
+    }
+
+    private Observable<Intent.InitialIntent> initialIntent() {
+        return Observable.just(Intent.InitialIntent.create());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Observable<Intent> intents() {
+        return Observable.mergeArray(initialIntent());
+    }
+
+    @Override
+    public void render(ViewState state) {
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setOnClickListener(ignored -> navigator.push(BeerDetailScreen.create()));
+        disposables.attach();
+        disposables.add(viewModel.viewStates().subscribe(this::render));
+        viewModel.process(intents());
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        setOnClickListener(null);
+        disposables.detach();
         super.onDetachedFromWindow();
     }
 }

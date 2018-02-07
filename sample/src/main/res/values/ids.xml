@@ -6,6 +6,8 @@
 
     <!-- Beer list -->
     <item type="id" name="beerListScreen" />
+    <item type="id" name="beerListChooseButton" />
+    <item type="id" name="beerListDetailButton" />
 
     <!-- Beer detail -->
     <item type="id" name="beerDetailScreen" />

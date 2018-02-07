@@ -5,7 +5,8 @@
     <string name="main_home_text">Home</string>
 
     <!-- Beer list -->
-    <string name="beer_list_text">List of beers</string>
+    <string name="beer_list_choose_button">Choose</string>
+    <string name="beer_list_detail_button">Details</string>
 
     <!-- Beer detail -->
     <string name="beer_detail_text">Beer details</string>

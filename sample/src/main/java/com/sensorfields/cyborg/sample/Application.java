@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.sensorfields.cyborg.navigator.Navigator;
 import com.sensorfields.cyborg.navigator.conductor.ConductorNavigator;
+import com.sensorfields.cyborg.sample.beer.list.BeerListViewModel;
 import com.sensorfields.cyborg.sample.main.home.HomeViewModel;
 
 import java.util.Map;
@@ -86,5 +87,9 @@ public class Application extends android.app.Application implements ViewModelPro
         @SuppressWarnings("unused")
         @Binds @IntoMap @ClassKey(HomeViewModel.class)
         abstract ViewModel homeViewModel(HomeViewModel homeViewModel);
+
+        @SuppressWarnings("unused")
+        @Binds @IntoMap @ClassKey(BeerListViewModel.class)
+        abstract ViewModel beerListViewModel(BeerListViewModel beerListViewModel);
     }
 }
