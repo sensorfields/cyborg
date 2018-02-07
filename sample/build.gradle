@@ -25,6 +25,7 @@ dependencies {
     implementation "com.android.support:design:${androidSupportLibraryVersion}"
 
     implementation "com.jakewharton.timber:timber:${timberVersion}"
+    implementation "com.google.guava:guava:${guavaVersion}"
 
     implementation "com.google.dagger:dagger:${daggerVersion}"
     annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"

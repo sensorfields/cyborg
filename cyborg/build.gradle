@@ -20,7 +20,7 @@ dependencies {
     api "android.arch.lifecycle:viewmodel:${androidArchVersion}"
 
     implementation "com.jakewharton.timber:timber:${timberVersion}"
-    implementation "com.google.guava:guava:${guavaVersion}"
+    api "com.google.guava:guava:${guavaVersion}"
 
     api "com.bluelinelabs:conductor:${conductorVersion}"
 
