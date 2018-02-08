@@ -13,6 +13,8 @@ import com.sensorfields.cyborg.sample.R;
 
 import io.reactivex.Observable;
 
+import static com.jakewharton.rxbinding2.view.RxView.clicks;
+
 public final class BeerListView extends LinearLayout implements MviView<Intent, ViewState> {
 
     private final ViewDisposables disposables = new ViewDisposables();
@@ -46,10 +48,18 @@ public final class BeerListView extends LinearLayout implements MviView<Intent, 
         return Observable.just(Intent.InitialIntent.create());
     }
 
+    private Observable<Intent.ChooseIntent> chooseIntent() {
+        return clicks(chooseButton).map(ignored -> Intent.ChooseIntent.create());
+    }
+
+    private Observable<Intent.DetailIntent> detailIntent() {
+        return clicks(detailButton).map(ignored -> Intent.DetailIntent.create());
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Observable<Intent> intents() {
-        return Observable.mergeArray(initialIntent());
+        return Observable.mergeArray(initialIntent(), chooseIntent(), detailIntent());
     }
 
     @Override

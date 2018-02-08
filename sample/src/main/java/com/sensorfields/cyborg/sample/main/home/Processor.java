@@ -1,7 +1,6 @@
 package com.sensorfields.cyborg.sample.main.home;
 
 import com.sensorfields.cyborg.navigator.Navigator;
-import com.sensorfields.cyborg.sample.beer.list.BeerListScreen;
 
 import javax.inject.Inject;
 
@@ -20,7 +19,7 @@ final class Processor implements ObservableTransformer<Action, Result> {
 
         beerList = upstream -> upstream
                 .filter(action -> {
-                    navigator.push(BeerListScreen.create());
+                    navigator.execute(action.transaction());
                     return false;
                 })
                 .map(action -> Result.RenderResult.create());

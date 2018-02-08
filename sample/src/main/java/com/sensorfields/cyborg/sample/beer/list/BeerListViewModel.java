@@ -22,6 +22,10 @@ public final class BeerListViewModel extends BaseMviViewModel<Intent, ViewState,
     protected Action action(Intent intent) {
         if (intent instanceof Intent.InitialIntent) {
             return Action.RenderAction.create();
+        } else if (intent instanceof Intent.ChooseIntent) {
+            return Action.ChooseAction.create();
+        } else if (intent instanceof Intent.DetailIntent) {
+            return Action.DetailAction.create();
         } else {
             throw new IllegalArgumentException("Unknown intent " + intent);
         }

@@ -17,4 +17,19 @@ interface Result extends MviResult<ViewState> {
             return new AutoValue_Result_RenderResult();
         }
     }
+
+    @AutoValue
+    abstract class ChooseResult implements Result {
+
+        abstract boolean success();
+
+        @Override
+        public ViewState reduce(ViewState state) {
+            return state;
+        }
+
+        static ChooseResult create(boolean success) {
+            return new AutoValue_Result_ChooseResult(success);
+        }
+    }
 }
