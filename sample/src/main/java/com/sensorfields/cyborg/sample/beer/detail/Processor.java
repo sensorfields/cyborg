@@ -14,17 +14,22 @@ final class Processor implements ObservableTransformer<Action, Result> {
     private final ObservableTransformer<Action.ChooseAction, Result.RenderResult> choose;
 
     @Inject Processor(Navigator navigator) {
-        choose = upstream -> upstream.switchMap(action -> {
-            navigator.execute(action.transaction());
-            return navigator.activityResults()
-                    .filter(activityResult ->
-                            activityResult.requestCode() == action.transaction().requestCode())
-                    .filter(activityResult -> {
-                        navigator.execute(Transaction.pop());
-                        return false;
-                    })
-                    .map(activityResult -> Result.RenderResult.create());
-        });
+        choose = upstream -> upstream
+                .switchMap(action -> {
+                    navigator.execute(action.transaction());
+                    return navigator.activityResults()
+                            .filter(activityResult ->
+                                    activityResult.requestCode()
+                                            == action.transaction().requestCode())
+                            .doOnNext(activityResult -> {
+                                throw new IllegalArgumentException("asd");
+                            })
+                            .map(activityResult -> Result.RenderResult.create());
+                })
+                .onErrorReturn(throwable -> {
+                    navigator.execute(Transaction.pop());
+                    return Result.RenderResult.create();
+                });
     }
 
     @SuppressWarnings("unchecked")

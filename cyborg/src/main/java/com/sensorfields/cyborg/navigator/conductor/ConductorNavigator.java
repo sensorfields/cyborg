@@ -20,13 +20,16 @@ import com.sensorfields.cyborg.navigator.Navigator;
 import com.sensorfields.cyborg.navigator.Screen;
 import com.sensorfields.cyborg.navigator.Transaction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 public final class ConductorNavigator implements Navigator {
 
@@ -59,6 +62,8 @@ public final class ConductorNavigator implements Navigator {
             public void onChangeCompleted(@Nullable Controller to, @Nullable Controller from,
                                           boolean isPush, @NonNull ViewGroup container,
                                           @NonNull ControllerChangeHandler handler) {
+                Timber.d("onChangeCompleted:\nFROM:  %s\nTO:    %s\nPUSH:  %s\nSTACK: %s", from, to,
+                        isPush, stack(router));
                 if (!isPush && from != null) {
                     String screenId = from.getInstanceId();
                     if (viewModelProviders.containsKey(screenId)) {
@@ -84,6 +89,7 @@ public final class ConductorNavigator implements Navigator {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Timber.d("onActivityResult: %s, %s, %s", requestCode, resultCode, data);
         activityResultSubject.onNext(ActivityResult.create(requestCode, resultCode, data));
     }
 
@@ -101,6 +107,7 @@ public final class ConductorNavigator implements Navigator {
 
     @Override
     public void execute(Transaction transaction) {
+        Timber.d("Execute: %s", transaction);
         if (transaction instanceof Transaction.RootTransaction) {
             router.setRoot(routerTransaction(((Transaction.RootTransaction) transaction).screen()));
         } else if (transaction instanceof Transaction.PushTransaction) {
@@ -152,5 +159,13 @@ public final class ConductorNavigator implements Navigator {
         void clear() {
             store.clear();
         }
+    }
+
+    private static List<Controller> stack(Router router) {
+        List<Controller> controllers = new ArrayList<>();
+        for (RouterTransaction transaction : router.getBackstack()) {
+            controllers.add(transaction.controller());
+        }
+        return controllers;
     }
 }
