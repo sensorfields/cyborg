@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
+import io.reactivex.Observable;
+
 public interface Navigator {
 
     /**
@@ -53,4 +55,6 @@ public interface Navigator {
      * @param transaction Transaction to execute.
      */
     void execute(Transaction transaction);
+
+    Observable<ActivityResult> activityResults();
 }

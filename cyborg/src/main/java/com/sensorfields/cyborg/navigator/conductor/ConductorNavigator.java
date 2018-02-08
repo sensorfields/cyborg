@@ -15,6 +15,7 @@ import com.bluelinelabs.conductor.Controller;
 import com.bluelinelabs.conductor.ControllerChangeHandler;
 import com.bluelinelabs.conductor.Router;
 import com.bluelinelabs.conductor.RouterTransaction;
+import com.sensorfields.cyborg.navigator.ActivityResult;
 import com.sensorfields.cyborg.navigator.Navigator;
 import com.sensorfields.cyborg.navigator.Screen;
 import com.sensorfields.cyborg.navigator.Transaction;
@@ -23,13 +24,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import timber.log.Timber;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public final class ConductorNavigator implements Navigator {
 
     private final Callable<Screen> rootScreenFactory;
     private final ViewModelProvider.Factory viewModelFactory;
     private final Map<String, ScreenViewModelProvider> viewModelProviders;
+    private final Subject<ActivityResult> activityResultSubject;
 
     private Router router;
 
@@ -38,6 +42,7 @@ public final class ConductorNavigator implements Navigator {
         this.rootScreenFactory = rootScreenFactory;
         this.viewModelFactory = viewModelFactory;
         this.viewModelProviders = new HashMap<>();
+        this.activityResultSubject = PublishSubject.create();
     }
 
     @Override
@@ -79,7 +84,7 @@ public final class ConductorNavigator implements Navigator {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Timber.e("onActivityResult: %s", requestCode);
+        activityResultSubject.onNext(ActivityResult.create(requestCode, resultCode, data));
     }
 
     @Override
@@ -110,6 +115,11 @@ public final class ConductorNavigator implements Navigator {
         } else {
             throw new IllegalArgumentException("Unknown transaction " + transaction);
         }
+    }
+
+    @Override
+    public Observable<ActivityResult> activityResults() {
+        return activityResultSubject;
     }
 
     private Activity activity() {
