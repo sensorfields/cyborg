@@ -1,13 +1,10 @@
 package com.sensorfields.cyborg.navigator;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.ViewGroup;
-
-import com.sensorfields.cyborg.mvi.MviViewModel;
 
 public interface Navigator {
 
@@ -40,13 +37,10 @@ public interface Navigator {
      */
     void onActivityResult(int requestCode, int resultCode, @Nullable Intent data);
 
+    /**
+     * Execute {@link Transaction transaction}.
+     *
+     * @param transaction Transaction to execute.
+     */
     void execute(Transaction transaction);
-
-    void root(Screen screen);
-
-    void push(Screen screen);
-
-    void activityForResult(int requestCode, Intent intent, @Nullable Bundle options);
-
-    <T extends ViewModel & MviViewModel> T viewModel(Class<T> type);
 }

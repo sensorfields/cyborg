@@ -2,6 +2,7 @@ package com.sensorfields.cyborg.sample;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelStore;
 import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -22,7 +23,7 @@ import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 import timber.log.Timber;
 
-public class Application extends android.app.Application implements ViewModelProvider.Factory {
+public class Application extends android.app.Application {
 
     @Override
     public void onCreate() {
@@ -60,20 +61,13 @@ public class Application extends android.app.Application implements ViewModelPro
         return ((Application) context.getApplicationContext()).component;
     }
 
-    @SuppressWarnings("unchecked")
-    @NonNull
-    @Override
-    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) component.viewModelProviders().get(modelClass).get();
-    }
-
     @Singleton
     @dagger.Component(modules = Module.class)
     public interface Component {
 
         Navigator navigator();
 
-        Map<Class<?>, Provider<ViewModel>> viewModelProviders();
+        ViewModelProvider viewModelProvider();
     }
 
     @dagger.Module
@@ -84,6 +78,17 @@ public class Application extends android.app.Application implements ViewModelPro
             return new ConductorNavigator(rootScreenFactory);
         }
 
+        @Provides @Singleton
+        static ViewModelProvider viewModelProvider(ViewModelProvider.Factory viewModelFactory) {
+            return new ViewModelProvider(new ViewModelStore(), viewModelFactory);
+        }
+
+        @Provides
+        static ViewModelProvider.Factory viewModelFactory(
+                Map<Class<?>, Provider<ViewModel>> viewModelProviders) {
+            return new ViewModelFactory(viewModelProviders);
+        }
+
         @SuppressWarnings("unused")
         @Binds @IntoMap @ClassKey(HomeViewModel.class)
         abstract ViewModel homeViewModel(HomeViewModel homeViewModel);
@@ -91,5 +96,21 @@ public class Application extends android.app.Application implements ViewModelPro
         @SuppressWarnings("unused")
         @Binds @IntoMap @ClassKey(BeerListViewModel.class)
         abstract ViewModel beerListViewModel(BeerListViewModel beerListViewModel);
+    }
+
+    static final class ViewModelFactory implements ViewModelProvider.Factory {
+
+        private final Map<Class<?>, Provider<ViewModel>> viewModelProviders;
+
+        ViewModelFactory(Map<Class<?>, Provider<ViewModel>> viewModelProviders) {
+            this.viewModelProviders = viewModelProviders;
+        }
+
+        @SuppressWarnings("unchecked")
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) viewModelProviders.get(modelClass).get();
+        }
     }
 }

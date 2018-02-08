@@ -37,7 +37,7 @@ public final class BeerListView extends LinearLayout implements MviView<Intent, 
 
     public BeerListView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        viewModel = Application.component(context).navigator().viewModel(BeerListViewModel.class);
+        viewModel = Application.component(context).viewModelProvider().get(BeerListViewModel.class);
         setOrientation(VERTICAL);
         inflate(context, R.layout.beer_list, this);
         chooseButton = findViewById(R.id.beerListChooseButton);
