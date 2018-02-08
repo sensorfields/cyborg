@@ -1,6 +1,7 @@
 package com.sensorfields.cyborg.navigator;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,6 +37,15 @@ public interface Navigator {
      * @param data Data.
      */
     void onActivityResult(int requestCode, int resultCode, @Nullable Intent data);
+
+    /**
+     * Create or return an existing {@link ViewModel view model} for current screen.
+     *
+     * @param type Type of the view model.
+     * @param <T> Type of the view model.
+     * @return View model instance.
+     */
+    <T extends ViewModel> T viewModel(Class<T> type);
 
     /**
      * Execute {@link Transaction transaction}.

@@ -2,7 +2,6 @@ package com.sensorfields.cyborg.sample;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelStore;
 import android.content.Context;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -66,24 +65,18 @@ public class Application extends android.app.Application {
     public interface Component {
 
         Navigator navigator();
-
-        ViewModelProvider viewModelProvider();
     }
 
     @dagger.Module
     static abstract class Module {
 
         @Provides @Singleton
-        static Navigator navigator(Activity.RootScreenFactory rootScreenFactory) {
-            return new ConductorNavigator(rootScreenFactory);
+        static Navigator navigator(Activity.RootScreenFactory rootScreenFactory,
+                                   ViewModelProvider.Factory viewModelFactory) {
+            return new ConductorNavigator(rootScreenFactory, viewModelFactory);
         }
 
         @Provides @Singleton
-        static ViewModelProvider viewModelProvider(ViewModelProvider.Factory viewModelFactory) {
-            return new ViewModelProvider(new ViewModelStore(), viewModelFactory);
-        }
-
-        @Provides
         static ViewModelProvider.Factory viewModelFactory(
                 Map<Class<?>, Provider<ViewModel>> viewModelProviders) {
             return new ViewModelFactory(viewModelProviders);

@@ -30,7 +30,7 @@ public final class HomeView extends AppCompatTextView implements MviView<Intent,
 
     public HomeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        viewModel = Application.component(context).viewModelProvider().get(HomeViewModel.class);
+        viewModel = Application.component(context).navigator().viewModel(HomeViewModel.class);
         setGravity(Gravity.CENTER);
         setText(R.string.main_home_text);
     }
