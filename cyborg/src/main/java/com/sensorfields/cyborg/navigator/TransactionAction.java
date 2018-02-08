@@ -1,6 +1,6 @@
 package com.sensorfields.cyborg.navigator;
 
-public interface TransactionAction {
+public interface TransactionAction<T extends Transaction> {
 
-    Transaction transaction();
+    T transaction();
 }

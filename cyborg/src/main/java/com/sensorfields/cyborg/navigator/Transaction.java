@@ -16,6 +16,10 @@ public abstract class Transaction {
         return PushTransaction.create(screen);
     }
 
+    public static PopTransaction pop() {
+        return PopTransaction.create();
+    }
+
     public static ActivityForResultTransaction activityForResult(int requestCode, Intent intent,
                                                                  @Nullable Bundle options) {
         return ActivityForResultTransaction.create(requestCode, intent, options);
@@ -38,6 +42,14 @@ public abstract class Transaction {
 
         static PushTransaction create(Screen screen) {
             return new AutoValue_Transaction_PushTransaction(screen);
+        }
+    }
+
+    @AutoValue
+    public abstract static class PopTransaction extends Transaction {
+
+        static PopTransaction create() {
+            return new AutoValue_Transaction_PopTransaction();
         }
     }
 

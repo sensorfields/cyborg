@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 import timber.log.Timber;
@@ -19,16 +20,17 @@ public abstract class BaseMviViewModel<
     private final Observable<S> viewStateObservable;
 
     protected BaseMviViewModel(ObservableTransformer<A, R> processor) {
+        logD("Constructor");
         intentSubject = PublishSubject.create();
         viewStateObservable = intentSubject
                 .compose(this::initialIntentFilter)
-                .doOnNext(intent -> Timber.d("Intent: %s", intent))
+                .doOnNext(mviLog("Intent"))
                 .map(this::action)
-                .doOnNext(action -> Timber.d("Action: %s", action))
+                .doOnNext(mviLog("Action"))
                 .compose(processor)
-                .doOnNext(result -> Timber.d("Result: %s", result))
+                .doOnNext(mviLog("Result"))
                 .scan(initialViewState(), (viewState, result) -> result.reduce(viewState))
-                .doOnNext(viewState -> Timber.d("ViewState: %s", viewState))
+                .doOnNext(mviLog("ViewState"))
                 .replay(1)
                 .autoConnect(0);
     }
@@ -54,5 +56,14 @@ public abstract class BaseMviViewModel<
         return intents.publish(shared -> Observable.merge(
                 shared.ofType(initialIntentType).take(1),
                 shared.filter(intent -> !initialIntentType.isInstance(intent))));
+    }
+
+    private <T> Consumer<T> mviLog(String message) {
+        return item -> logD("%s: %s", message, item);
+    }
+
+    private void logD(String message, Object... args) {
+        Timber.tag(getClass().getSimpleName());
+        Timber.d(message, args);
     }
 }

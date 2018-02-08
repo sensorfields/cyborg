@@ -3,7 +3,6 @@ package com.sensorfields.cyborg.sample.beer.list;
 import android.app.Activity;
 
 import com.sensorfields.cyborg.navigator.Navigator;
-import com.sensorfields.cyborg.navigator.Transaction;
 
 import javax.inject.Inject;
 
@@ -23,13 +22,10 @@ final class Processor implements ObservableTransformer<Action, Result> {
         render = upstream -> upstream.map(action -> Result.RenderResult.create());
 
         choose = upstream -> upstream.switchMap(action -> {
-            Transaction.ActivityForResultTransaction transaction =
-                    (Transaction.ActivityForResultTransaction) action.transaction();
-            navigator.execute(transaction);
-
+            navigator.execute(action.transaction());
             return navigator.activityResults()
                     .filter(activityResult ->
-                            activityResult.requestCode() == transaction.requestCode())
+                            activityResult.requestCode() == action.transaction().requestCode())
                     .map(activityResult ->
                             Result.ChooseResult
                                     .create(activityResult.resultCode() == Activity.RESULT_OK));

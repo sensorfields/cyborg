@@ -20,7 +20,8 @@ interface Action extends MviAction {
     }
 
     @AutoValue
-    abstract class ChooseAction implements Action, TransactionAction {
+    abstract class ChooseAction implements Action,
+            TransactionAction<Transaction.ActivityForResultTransaction> {
 
         static ChooseAction create() {
             return new AutoValue_Action_ChooseAction(Transaction

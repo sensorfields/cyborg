@@ -4,13 +4,10 @@ import com.sensorfields.cyborg.mvi.BaseMviViewModel;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
-
 public final class BeerListViewModel extends BaseMviViewModel<Intent, ViewState, Action, Result> {
 
     @Inject BeerListViewModel(Processor processor) {
         super(processor);
-        Timber.e("Constructor");
     }
 
     @Override

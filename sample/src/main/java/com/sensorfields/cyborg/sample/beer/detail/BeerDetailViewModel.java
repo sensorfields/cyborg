@@ -1,12 +1,12 @@
-package com.sensorfields.cyborg.sample.main.home;
+package com.sensorfields.cyborg.sample.beer.detail;
 
 import com.sensorfields.cyborg.mvi.BaseMviViewModel;
 
 import javax.inject.Inject;
 
-public final class HomeViewModel extends BaseMviViewModel<Intent, ViewState, Action, Result> {
+public final class BeerDetailViewModel extends BaseMviViewModel<Intent, ViewState, Action, Result> {
 
-    @Inject HomeViewModel(Processor processor) {
+    @Inject BeerDetailViewModel(Processor processor) {
         super(processor);
     }
 
@@ -18,9 +18,7 @@ public final class HomeViewModel extends BaseMviViewModel<Intent, ViewState, Act
     @Override
     protected Action action(Intent intent) {
         if (intent instanceof Intent.InitialIntent) {
-            return Action.RenderAction.create();
-        } else if (intent instanceof Intent.BeerListIntent) {
-            return Action.BeerListAction.create();
+            return Action.ChooseAction.create();
         } else {
             throw new IllegalArgumentException("Unknown intent " + intent);
         }
