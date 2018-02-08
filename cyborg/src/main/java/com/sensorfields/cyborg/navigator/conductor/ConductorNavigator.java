@@ -17,26 +17,39 @@ import com.sensorfields.cyborg.navigator.Transaction;
 
 import java.util.concurrent.Callable;
 
+import timber.log.Timber;
+
 public final class ConductorNavigator implements Navigator {
+
+    private final Callable<Screen> rootScreenFactory;
 
     private Router router;
 
+    public ConductorNavigator(Callable<Screen> rootScreenFactory) {
+        this.rootScreenFactory = rootScreenFactory;
+    }
+
     @Override
-    public void create(Activity activity, ViewGroup container, @Nullable Bundle savedInstanceState,
-                       Callable<Screen> rootScreenFactory) {
+    public void onCreate(Activity activity, ViewGroup container,
+                         @Nullable Bundle savedInstanceState) {
         router = Conductor.attachRouter(activity, container, savedInstanceState);
         if (!router.hasRootController()) {
             try {
                 root(rootScreenFactory.call());
             } catch (Exception e) {
-                throw new IllegalArgumentException("Root screen creation failed", e);
+                throw new IllegalStateException("Root screen creation failed", e);
             }
         }
     }
 
     @Override
-    public boolean back() {
+    public boolean onBackPressed() {
         return router.handleBack();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Timber.e("onActivityResult: %s", requestCode);
     }
 
     @Override
@@ -49,7 +62,7 @@ public final class ConductorNavigator implements Navigator {
         } else if (transaction instanceof Transaction.ActivityForResultTransaction) {
             Transaction.ActivityForResultTransaction activityForResultTransaction =
                     (Transaction.ActivityForResultTransaction) transaction;
-            currentScreen().startActivityForResult(activityForResultTransaction.intent(),
+            activity().startActivityForResult(activityForResultTransaction.intent(),
                     activityForResultTransaction.requestCode(),
                     activityForResultTransaction.options());
         } else {
@@ -75,6 +88,14 @@ public final class ConductorNavigator implements Navigator {
     @Override
     public <T extends ViewModel & MviViewModel> T viewModel(Class<T> type) {
         return currentScreen().getViewModelProvider().get(type);
+    }
+
+    private Activity activity() {
+        Activity activity = router.getActivity();
+        if (activity == null) {
+            throw new IllegalStateException("Activity is null");
+        }
+        return activity;
     }
 
     private ConductorScreen currentScreen() {

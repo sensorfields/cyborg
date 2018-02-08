@@ -80,8 +80,8 @@ public class Application extends android.app.Application implements ViewModelPro
     static abstract class Module {
 
         @Provides @Singleton
-        static Navigator navigator() {
-            return new ConductorNavigator();
+        static Navigator navigator(Activity.RootScreenFactory rootScreenFactory) {
+            return new ConductorNavigator(rootScreenFactory);
         }
 
         @SuppressWarnings("unused")
